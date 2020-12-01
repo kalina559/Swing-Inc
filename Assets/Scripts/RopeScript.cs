@@ -9,19 +9,19 @@ public class RopeScript : MonoBehaviour
     private enum swingDirection {none, left, right };
     private swingDirection lastSwing = swingDirection.none;
     public Vector3 destiny;
-    public float speed;
+    public float speed = 1;
     public float swingSpeed = 50;
 
     public float distance = 2;
     public GameObject player;
     public GameObject lastNode;
     public GameObject nodePrefab;
-    private int count = 0;
     public Joystick joystick;
 
     public static List<GameObject> nodeList;
     private bool wait = false;
     public LineRenderer line;
+
     private void Start()
     {
         nodeList = new List<GameObject>();
@@ -31,12 +31,11 @@ public class RopeScript : MonoBehaviour
     void FixedUpdate()
     {
         drawRope();
-        if (ThrowHook.isHooked == false && PlayerAim.isDeleting == false )
-        {                     
-            while (Input.GetKey(KeyCode.Space) && Vector2.Distance(player.transform.position, lastNode.transform.position) > distance)  //nodes are in a certain distance between each other
+        if (ThrowHook.isHooked == false && PlayerAim.isDeleting == false)
+        {
+            while (Input.GetKey(KeyCode.Space) && Vector2.Distance(player.transform.position, lastNode.transform.position) > distance && nodeList.Count < 59)  //nodes are in a certain distance between each other
             {
                 createNode();
-                ++count;
             }
             transform.position = Vector2.MoveTowards(transform.position, destiny, speed);  //hook moving forward/backwards depending on situation
 
@@ -48,7 +47,7 @@ public class RopeScript : MonoBehaviour
         }
         else if(ThrowHook.isHooked == true)
         {
-            if (joystick.Vertical > 0.95f && nodeList.Count > 2 && wait == false)
+            if (joystick.Vertical > 0.95f && nodeList.Count > 2 && wait == false)    //shortening the line
             {
                 StartCoroutine(DeleteNodeCoroutine());
             }
@@ -68,11 +67,16 @@ public class RopeScript : MonoBehaviour
         }
         if (!Input.GetKey(KeyCode.Space))  //when player lets go of the space key, the hook returns to the character
         {
-            speed = 1;
+            //speed = 1;
             ThrowHook.isHooked = false;
             lastSwing = swingDirection.none;
             line.positionCount = 0;
-        }      
+        }     
+        
+        //if(finished == false)
+        //{
+        //    transform.GetComponent<Rigidbody2D>().gravityScale = 1;
+        //}
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -80,7 +84,7 @@ public class RopeScript : MonoBehaviour
         if (collision.gameObject.tag == "platform" && Input.GetKey(KeyCode.Space))
         {
             ThrowHook.isHooked = true;
-            speed = 0;
+            //speed = 0;
             lastNode.GetComponent<HingeJoint2D>().connectedBody = player.GetComponent<Rigidbody2D>();
         }
     }
@@ -108,8 +112,12 @@ public class RopeScript : MonoBehaviour
         wait = true;
 
         //adding momentum
-        var forceDirection = nodeList[0].transform.position - player.transform.position;
-        player.GetComponent<Rigidbody2D>().AddForce(forceDirection * 10);
+        if (nodeList.Count > 11)
+        {
+            //tu sie dzieje cos dziwnego xd
+            var forceDirection = nodeList[10].transform.position - player.transform.position;
+            player.GetComponent<Rigidbody2D>().AddRelativeForce(forceDirection * 10);
+        }
 
         Destroy(nodeList[0]);
         nodeList.RemoveAt(0);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
-public class PlayerAim : MonoBehaviour
+public class PlayerAim : MonoBehaviour   // responsible for aiming with joystick
 {
     private Transform aimTransform;
     public Joystick joystick;
@@ -35,10 +35,10 @@ public class PlayerAim : MonoBehaviour
             float horizontal = joystick.Horizontal;
             float vertical = joystick.Vertical;
 
-            if (horizontal < 0) //works  
+            if (horizontal < 0)  
                 horizontal = 0;
-            if (vertical < 0)
-                vertical = 0;
+            //if (vertical < 0)
+            //    vertical = 0;
 
             Vector3 aimDirection = new Vector3(horizontal, vertical);
             float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
@@ -51,12 +51,13 @@ public class PlayerAim : MonoBehaviour
             hook.transform.position = goal;
 
             //hook.GetComponent<Rigidbody2D>().MovePosition(goal);
+            //hook.transform.position = Vector2.MoveTowards(hook.transform.position, goal, 0.4f);     //cant fire the rope after pulling it back
         }
 
-        if(transform.position.y < - 50)
+        if (transform.position.y < - 50)
         {
             Score.ResetDistance();
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene(1);
         }
 
     }
