@@ -130,7 +130,6 @@ public class RopeScript : MonoBehaviour
 
     void drawRope()
     {
-
         line.positionCount = nodeList.Count + 1;
         
         line.SetPosition(0, transform.position);   // connected to hook
